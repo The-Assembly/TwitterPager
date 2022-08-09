@@ -1,22 +1,21 @@
 #include <Wire.h>
 
 void setup(){
-  Wire.begin();
- 
-  Serial.begin(9600);
-  while (!Serial);           
+  Wire.begin();           // initializes Wire library and join the I2C bus as a controller/peripheral
+  Serial.begin(9600);     // starts serial communication (Arduino can send out commands through the USB connection)
+  while (!Serial);        // wait for serial monitor      
   Serial.println("\nI2C Scanner");
 }
  
 void loop(){
-  byte error, address;
+  byte error, address;    // initialize variables for error and I2C address
   int nDevices;
  
   Serial.println("Scanning...");
  
   nDevices = 0;
   for(address = 1; address < 127; address++ ){
-    Wire.beginTransmission(address);
+    Wire.beginTransmission(address); //begins a transmission to the I2C peripheral device with the given address
     error = Wire.endTransmission();
  
     if (error == 0){
