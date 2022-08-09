@@ -2,18 +2,29 @@
 
 #include <LiquidCrystal_I2C.h>
 
-
+/*
+ * Initialize the I2C LCD object
+ * Set the LCD address to 0x26 for a 16 chars and 2 line display
+ */
 LiquidCrystal_I2C lcd(0x26, 16, 2); 
 
-void setup()
+/*
+ * Code in setup() only runs one time
+ * Runs at the beginning of program
+ */
+void setup()        
 {
-  lcd.init(); 
-  lcd.backlight(); 
-  lcd.clear(); 
-  lcd.setCursor(3,0); 
-  lcd.print("Welcome to"); 
-  lcd.setCursor(2,1); 
-  lcd.print("The Assembly");
+  lcd.init();                // initialize the lcd            
+  lcd.backlight();           // enable/disable the backlight
+  lcd.clear();               // clears LCD screen and positions cursor to upper-left corner
+  lcd.setCursor(3,0);        // positions cursor
+  lcd.print("Welcome to");   // prints text 
+  lcd.setCursor(2,1);        // positions cursor 
+  lcd.print("The Assembly"); // prints text 
 }
+
+/*
+ * Code in loop() will repeat over and over again
+ */
 void loop() {
 }
