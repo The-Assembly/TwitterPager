@@ -10,7 +10,7 @@ char pass[] = "WelcomeToASSEMBLY";  // Your network password
 String username;
 unsigned long startTime = 0;  // Tracks when a new username was set
 
-LiquidCrystal_I2C lcd(0x26, 16, 2);
+LiquidCrystal_I2C lcd(0x26, 20, 4);
 
 IPAddress dns(8, 8, 8, 8);             // Google DNS
 IPAddress apiWrapper(37, 16, 4, 227);  // Twitter API wrapper server IP
@@ -69,11 +69,22 @@ void loop() {
     lcd.clear();
     lcd.setCursor(0, 0);
 
-    lcd.autoscroll();
+    int currentLine = 1;
     for (int i = 0; i < response.length(); i++) {
       lcd.print(response.charAt(i));
-      if (i % 16 == 0) {
-        delay(1000);
+      if (i != 0 && i % 16 == 0) {
+        // new line?
+        if (currentLine == 2) {
+          // two lines have been printed
+          // we can now scroll?
+          delay(1000 * 5);
+          lcd.clear();
+          lcd.setCursor(0, 0);
+          currentLine = 1;
+        } else {
+          lcd.setCursor(0, 1);
+          currentLine = 2;
+        }
       }
     }
 
