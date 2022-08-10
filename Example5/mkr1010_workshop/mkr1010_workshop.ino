@@ -1,4 +1,4 @@
-#include <ArduinoHttpClient.h>
+#include <ArduinoHttpClient.h> // used for HTTP (GET, POST, PUT, DELETE) requests to a web server
 #include <LiquidCrystal_I2C.h>
 #include <SPI.h>
 #include <WiFiNINA.h>
@@ -10,25 +10,21 @@ char pass[] = "WelcomeToASSEMBLY";   // your network password
 LiquidCrystal_I2C lcd(0x26, 16, 2);
 String stringVariable;
 
-IPAddress dns(8, 8, 8, 8);  // Google dns
-// IPAddress laptop(192, 168, 43, 79); //Google dns
-IPAddress laptop(37, 16, 4, 227);
-int status = WL_IDLE_STATUS;
+IPAddress apiWrapper(37, 16, 4, 227);
+int status = WL_IDLE_STATUS; // is a constant, initialized in WiFi library
 
-// Initialize the client library
-//"wandering-silence-8110.fly.dev"
 WiFiClient wifi;
 HttpClient client = HttpClient(wifi, laptop, 80);
 
 void setup() {
   Serial.begin(9600);
 
-  while (!Serial)
+  while (!Serial) // ensure serial monitor is responding
     ;
-  status = WiFi.begin(ssid, pass);
+  status = WiFi.begin(ssid, pass); // connect to the network initially
 
   // attempt to connect to Wifi network:
-  while (status != WL_CONNECTED) {
+  while (status != WL_CONNECTED) { // is a constant, initialized in WiFi library
     Serial.print("Attempting to connect to network: ");
     Serial.println(ssid);
     // Connect to WPA/WPA2 network:
@@ -37,20 +33,13 @@ void setup() {
     // wait 10 seconds for connection:
     delay(10000);
   }
-  WiFi.setDNS(dns);
   Serial.print("Dns configured. \n");
   Serial.print("Enter a twitter username: \n");
-
-  //while (Serial.available() == 0){};
-  //stringVariable = Serial.readString();
-  //Serial.print(stringVariable = stringVariable.substring(0, stringVariable.length() - 1));
-  //Serial.print(stringVariable.length());
 }
 
 void loop() {
   Serial.println("\nmaking GET request");
   
-  //"/makesmartthings"
   client.get("/makesmartthings");
 
   // read the status code and body of the response

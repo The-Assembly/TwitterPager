@@ -12,7 +12,6 @@ unsigned long startTime = 0;  // Tracks when a new username was set
 
 LiquidCrystal_I2C lcd(0x26, 16, 2);
 
-IPAddress dns(8, 8, 8, 8);             // Google DNS
 IPAddress apiWrapper(37, 16, 4, 227);  // Twitter API wrapper server IP
 int status = WL_IDLE_STATUS;
 
@@ -36,7 +35,6 @@ void setup() {
     delay(10000);
   }
 
-  WiFi.setDNS(dns);
   Serial.print("Dns configured.\n");
   Serial.print("Enter a twitter username: \n");
 
