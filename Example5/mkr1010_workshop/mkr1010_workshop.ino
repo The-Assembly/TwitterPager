@@ -12,26 +12,24 @@ String stringVariable;
 
 IPAddress apiWrapper(37, 16, 4, 227);
 int status = WL_IDLE_STATUS; // is a constant, initialized in WiFi library
+// ^ temp status assigned when WiFi.begin() is called and remains active until the number of attempts expires
 
-WiFiClient wifi;
-HttpClient client = HttpClient(wifi, laptop, 80);
+WiFiClient wifi; //initializes WiFi client
+HttpClient client = HttpClient(wifi, apiWrapper, 80); // use WiFi client to initialize HTTP client
 
 void setup() {
   Serial.begin(9600);
 
   while (!Serial) // ensure serial monitor is responding
     ;
-  status = WiFi.begin(ssid, pass); // connect to the network initially
+  status = WiFi.begin(ssid, pass); // connect WiFi client to the network initially
 
   // attempt to connect to Wifi network:
   while (status != WL_CONNECTED) { // is a constant, initialized in WiFi library
     Serial.print("Attempting to connect to network: ");
     Serial.println(ssid);
-    // Connect to WPA/WPA2 network:
-    status = WiFi.begin(ssid, pass);
-
-    // wait 10 seconds for connection:
-    delay(10000);
+    status = WiFi.begin(ssid, pass); // // Connect to WPA/WPA2 network:
+    delay(10000); // wait 10 seconds for connection
   }
   Serial.print("Dns configured. \n");
   Serial.print("Enter a twitter username: \n");
@@ -47,19 +45,19 @@ void loop() {
   String response = client.responseBody();
 
   Serial.print("Status code: ");
-  Serial.println(statusCode);
+  Serial.println(statusCode); // ex 404 okay
   Serial.print("Response: ");
-  Serial.println(response);
+  Serial.println(response); // the body of the tweet
 
   lcd.init();
   lcd.backlight();
   lcd.clear();
   lcd.setCursor(0, 0);
 
-  lcd.autoscroll();
+  lcd.autoscroll(); // moves all the text one space to the left each time a letter is added
   for (int i = 0; i < response.length(); i++) {
     lcd.print(response.charAt(i));
-    if (i % 16 == 0) {
+    if (i % 16 == 0) { // wait until the 16th character
       delay(1000);
     }
   }
