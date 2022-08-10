@@ -67,14 +67,13 @@ void loop() {
     lcd.clear();
     lcd.setCursor(0, 0);
 
-    int currentLine = 1;
+    int currentLine = 1; // flag to know whether we're on the first or the second row of the display
     for (int i = 0; i < response.length(); i++) {
       lcd.print(response.charAt(i));
       if (i != 0 && i % 16 == 0) {
         // new line?
-        if (currentLine == 2) {
-          // two lines have been printed
-          // we can now scroll?
+        if (currentLine == 2) { // two lines have been printed 
+          // we can now scroll
           delay(1000 * 5);
           lcd.clear();
           lcd.setCursor(0, 0);

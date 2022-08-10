@@ -8,7 +8,7 @@ char ssid[] = "ASSEMBLY";           //  Your network SSID (name)
 char pass[] = "WelcomeToASSEMBLY";  // Your network password
 
 String username;
-unsigned long startTime = 0;  // Tracks when a new username was set
+unsigned long startTime = 0;  // Tracks when a new username was set, unasigned long cuz thats the type millis() returns
 
 LiquidCrystal_I2C lcd(0x26, 16, 2);
 
@@ -47,6 +47,7 @@ void setup() {
 }
 
 void loop() {
+  // If we're just starting or if the number of milliseconds passed since the start time is greatest than an hours worth
   if (startTime == 0 || millis() - startTime >= (1000 * 60 * 60)) {
     // An hour has passed
     Serial.println("\nMaking GET request");
@@ -75,12 +76,13 @@ void loop() {
       }
     }
 
+    // millis() is a way to keep time, it returns the number of milliseconds passed since the cpu started up
     startTime = millis();
     Serial.println("Waiting...");
   } else {
-    if (Serial.available()) {
-      String raw = Serial.readString();
-      username = raw.substring(0, raw.length() - 1);
+    if (Serial.available()) { // if serial is available it keeps checking for user input
+      String raw = Serial.readString(); // reads the twitter handle
+      username = raw.substring(0, raw.length() - 1); // remove the additional newline
       startTime = 0;  // Reset the start time
     }
   }
