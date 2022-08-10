@@ -1,8 +1,8 @@
-#include <ArduinoHttpClient.h>
-#include <LiquidCrystal_I2C.h>
-#include <SPI.h>
-#include <WiFiNINA.h>
 #include <Wire.h>
+#include <WiFiNINA.h>
+#include <SPI.h>
+#include <LiquidCrystal_I2C.h>
+#include <ArduinoHttpClient.h>
 
 char ssid[] = "ASSEMBLY";           //  Your network SSID (name)
 char pass[] = "WelcomeToASSEMBLY";  // Your network password
@@ -12,19 +12,18 @@ unsigned long startTime = 0;  // Tracks when a new username was set
 
 LiquidCrystal_I2C lcd(0x26, 20, 4);
 
-IPAddress dns(8, 8, 8, 8);             // Google DNS
 IPAddress apiWrapper(37, 16, 4, 227);  // Twitter API wrapper server IP
 int status = WL_IDLE_STATUS;
 
-WiFiClient wifi;
-HttpClient client = HttpClient(wifi, apiWrapper, 80);
+WiFiClient wifi; //initializes WiFi client
+HttpClient client = HttpClient(wifi, apiWrapper, 80); // use WiFi client to initialize HTTP client
 
 void setup() {
   Serial.begin(9600);
 
   while (!Serial)
     ;
-  status = WiFi.begin(ssid, pass);
+  status = WiFi.begin(ssid, pass); // connect WiFi client to the network
 
   // Attempt to connect to Wifi network:
   while (status != WL_CONNECTED) {
@@ -36,7 +35,6 @@ void setup() {
     delay(10000);
   }
 
-  WiFi.setDNS(dns);
   Serial.print("Dns configured.\n");
   Serial.print("Enter a twitter username: \n");
 
