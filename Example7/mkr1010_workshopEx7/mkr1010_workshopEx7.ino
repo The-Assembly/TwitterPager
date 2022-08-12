@@ -10,20 +10,21 @@ char pass[] = "WelcomeToASSEMBLY";  // Your network password
 String username;
 unsigned long startTime = 0;  // Tracks when a new username was set
 
-LiquidCrystal_I2C lcd(0x26, 20, 4);
+LiquidCrystal_I2C lcd(0x27, 20, 4);
 
 IPAddress apiWrapper(37, 16, 4, 227);  // Twitter API wrapper server IP
 int status = WL_IDLE_STATUS;
 
-WiFiClient wifi; //initializes WiFi client
-HttpClient client = HttpClient(wifi, apiWrapper, 80); // use WiFi client to initialize HTTP client
+WiFiClient wifi;  // initializes WiFi client
+HttpClient client = HttpClient(
+    wifi, apiWrapper, 80);  // use WiFi client to initialize HTTP client
 
 void setup() {
   Serial.begin(9600);
 
   while (!Serial)
     ;
-  status = WiFi.begin(ssid, pass); // connect WiFi client to the network
+  status = WiFi.begin(ssid, pass);  // connect WiFi client to the network
 
   // Attempt to connect to Wifi network:
   while (status != WL_CONNECTED) {
@@ -46,6 +47,20 @@ void setup() {
   Serial.println("Initializing pager with user: " + username);
 }
 
+void nextLineOrClear(LiquidCrystal_I2C* lcd, int* currentCol, int* currentRow,
+                     int clearDelayAmount) {
+  *currentCol = 0;
+  if (*currentRow == 1) {
+    lcd->clear();
+    lcd->setCursor(0, 0);
+    *currentRow = 0;
+    delay(clearDelayAmount);
+  } else {
+    lcd->setCursor(0, 1);
+    *currentRow = 1;
+  }
+}
+
 void loop() {
   if (startTime == 0 || millis() - startTime >= (1000 * 60 * 60)) {
     // An hour has passed
@@ -62,27 +77,47 @@ void loop() {
     Serial.print("Response: ");
     Serial.println(response);
 
+    char* ptr = strtok((char*)response.c_str(), " ");
+
     lcd.init();
     lcd.backlight();
     lcd.clear();
     lcd.setCursor(0, 0);
 
-    int currentLine = 1; // flag to know whether we're on the first or the second row of the display
-    for (int i = 0; i < response.length(); i++) {
-      lcd.print(response.charAt(i));
-      if (i != 0 && i % 16 == 0) {
-        // new line?
-        if (currentLine == 2) { // two lines have been printed 
-          // we can now scroll
-          delay(1000 * 5);
-          lcd.clear();
-          lcd.setCursor(0, 0);
-          currentLine = 1;
+    int currentRow = 0;
+    int currentCol = 0;
+    while (ptr != NULL) {
+      String word = String(ptr);
+
+      if (word.length() > 16) {
+        // go to the next line if we're not at the beginning of a line
+        nextLineOrClear(&lcd, &currentCol, &currentRow, 0);
+
+        for (int i = 0; i < word.length(); i++) {
+          if (i != 0 && i % 16 == 0) {
+            nextLineOrClear(&lcd, &currentCol, &currentRow, 500);
+          }
+
+          lcd.print(word.charAt(i));
+        }
+      } else {
+        if (currentCol != 0) {
+          lcd.print(' ');
+          currentCol += 1;
+        }
+
+        if (currentCol + word.length() >= 16) {
+          nextLineOrClear(&lcd, &currentCol, &currentRow, 500);
+          continue;
         } else {
-          lcd.setCursor(0, 1);
-          currentLine = 2;
+          currentCol += word.length();
+          lcd.print(word);
         }
       }
+
+      // create next part
+      ptr = strtok(NULL, " ");
+      delay(500);
     }
 
     startTime = millis();
